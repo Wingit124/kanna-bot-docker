@@ -1,5 +1,5 @@
 from discord.ext import commands
-from othello import Othello
+from othello.othello import Othello
 import re
 
 class OthelloCog(commands.Cog):
