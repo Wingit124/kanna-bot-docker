@@ -1,1 +1,1 @@
-botstart: python bot.py
+discordbot: python bot.py
