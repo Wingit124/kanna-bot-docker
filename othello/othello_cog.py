@@ -11,7 +11,7 @@ class OthelloCog(commands.Cog):
         self.bot = bot
 
     @commands.command(aliases=['os', 'othellostart'])
-    async def start(self, context: commands.context.Context):
+    async def start(self, context):
         # ctx.channelはTextChannel型
         if not context.channel.id in self.othellos:
             self.othellos[context.channel.id] = Othello()

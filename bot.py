@@ -1,11 +1,13 @@
 from discord.ext.commands import Bot
 from othello import othello
+from anime import anime
 
 
 TOKEN = 'ODczNDQyODg1NjI0NzkxMDgx.YQ4fEw.niRIHtJN2FD_Q9mN2ge-NRuLB0Y'
 
 bot = Bot(command_prefix=['d:','D:'])
 bot.load_extension('othello.othello_cog')
+bot.load_extension('anime.anime_cog')
 
 
 @bot.event
