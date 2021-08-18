@@ -1,59 +1,35 @@
-from json.decoder import JSONDecoder
 import requests
+import discord
+from anime.const import Const
+from discord import embeds
 
 
 class Anime:
 
     TOKEN = 'X6nbfeLPhNdGZ8_uWn7PSSXFh4xkwxeT2P_igZUNjmo'
 
-    def get_anime(self):
+    def get_anime_by_title(self, title):
         headers = {
         'Authorization': 'bearer {0}'.format(self.TOKEN),
         }
         data = {
-        'query': '''
-        query {
-            searchWorks(
-                seasons: ["2021-summer"],
-                orderBy: { field: WATCHERS_COUNT, direction: DESC }
-            )   {
-                edges {
-                    node {
-                        title
-                        officialSiteUrl 
-                        image {
-                            recommendedImageUrl
-                        }
-                        casts {
-                            edges {
-                                node {
-                                    character {
-                                        name
-                                    }
-                                    name
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        '''
+        'query': Const.query_by_title % (title)
         }
         response = requests.post('https://api.annict.com/graphql', headers=headers, data=data)
         json = response.json()
-        for anime in json['data']['searchWorks']['edges']:
-            print('タイトル: {0}'.format(anime['node']['title']))
-            print('サイトURL: {0}'.format(anime['node']['officialSiteUrl']))
-            print('画像URL: {0}'.format(anime['node']['image']['recommendedImageUrl']))
-            for cast in anime['node']['casts']['edges']:
-                print('{0}(CV. {1})'.format(cast['node']['character']['name'], cast['node']['name']))
+        node = json['data']['searchWorks']['edges'][0]['node']
+        embed = discord.Embed(title = node['title'], url = node['officialSiteUrl'])
+        embed.set_thumbnail(url=node['image']['recommendedImageUrl'] or '')
+        for cast in node['casts']['edges']:
+            embed.add_field(name=cast['node']['character']['name'], value=cast['node']['name'], inline=True)
 
-            print('\n\n\n')
-        
-        print('process finished')
+        #for anime in json['data']['searchWorks']['edges']:
+            #print('タイトル: {0}'.format(anime['node']['title']))
+            #print('サイトURL: {0}'.format(anime['node']['officialSiteUrl']))
+            #print('画像URL: {0}'.format(anime['node']['image']['recommendedImageUrl'] or ''))
+            #for cast in anime['node']['casts']['edges']:
+                #print('{0}(CV. {1})'.format(cast['node']['character']['name'], cast['node']['name']))
 
+            #print('\n\n\n')
 
-
-anime = Anime()
-anime.get_anime()
+        return embed
