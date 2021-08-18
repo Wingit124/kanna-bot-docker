@@ -10,7 +10,7 @@ class OthelloCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(aliases=['os', 'othellostart'])
+    @commands.command(name='othello_start', aliases=['os'])
     async def start(self, context):
         # ctx.channelはTextChannel型
         if not context.channel.id in self.othellos:
@@ -22,7 +22,7 @@ class OthelloCog(commands.Cog):
             self.othellos[context.channel.id].start()
             await context.send(self.othellos[context.channel.id].output)
 
-    @commands.command(aliases=['of', 'othellofinish'])
+    @commands.command(name='othello_finish', aliases=['of'])
     async def finish(self, context):
         if self.check_start_othello(context):
             self.othellos[context.channel.id].finish()
@@ -30,7 +30,7 @@ class OthelloCog(commands.Cog):
         else:
             await context.send('ゲームが開始されてないよ')
 
-    @commands.command(aliases=['oh', 'othellohint'])
+    @commands.command(name='othello_toggle_hint', aliases=['oh'])
     async def toggle_hint(self, context):
         if self.check_start_othello(context):
             self.othellos[context.channel.id].toggle_hint()
@@ -38,7 +38,7 @@ class OthelloCog(commands.Cog):
         else:
             await context.send('ゲームが開始されてないよ')
 
-    @commands.command(aliases=['op', 'othelloput'])
+    @commands.command(name='othello_put', aliases=['op'])
     async def put(self, context, position):
         if self.check_start_othello(context):
             if re.compile('^[a-h][0-7]$').search(position):
