@@ -23,7 +23,7 @@ class AnimePagerView(discord.ui.View):
             self.anime.get_anime(self.anime.prev_page)
             await interaction.message.edit(embed=self.anime.output_embed, view=self)
 
-    @discord.ui.button(label='', style=discord.ButtonStyle.gray)
+    @discord.ui.button(label='-', style=discord.ButtonStyle.gray)
     async def dummy(self, button: discord.ui.Button, interaction: discord.Interaction):
         return
 
