@@ -23,7 +23,7 @@ class AnimePagerView(discord.ui.View):
             self.anime.get_anime(self.anime.prev_page)
             await interaction.message.edit(embed=self.anime.output_embed, view=self)
 
-    @discord.ui.button(label='-', style=discord.ButtonStyle.danger)
+    @discord.ui.button(label='✖︎', style=discord.ButtonStyle.danger)
     async def delete(self, button: discord.ui.Button, interaction: discord.Interaction):
         await interaction.message.delete()
 
