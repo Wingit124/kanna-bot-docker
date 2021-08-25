@@ -1,23 +1,37 @@
+from typing import Counter
+from discord.embeds import Embed
 import requests
-import discord
 import urllib.parse
-from discord import embeds
 
 
 class Anime:
 
-    TOKEN = 'X6nbfeLPhNdGZ8_uWn7PSSXFh4xkwxeT2P_igZUNjmo'
-    json = ''
+    TOKEN: str = 'X6nbfeLPhNdGZ8_uWn7PSSXFh4xkwxeT2P_igZUNjmo'
 
-    def get_anime_by_title(self, title):
+    filter_title: str
+    prev_page: int
+    next_page: int
+    total_count: int
+    output_embed: Embed
+
+    def __init__(self, filter_title):
+        self.filter_title = filter_title
+    
+    def get_anime(self, page=1):
         query = {
                 'access_token': self.TOKEN,
-                'filter_title': title
+                'filter_title': self.filter_title,
+                'per_page': 1,
+                'page': page
                 }
         query = urllib.parse.urlencode(query)
         response = requests.get('https://api.annict.com/v1/works?' + query)
-        self.json = response.json()
-        work = self.json['works'][0]
+        json = response.json()
+        if json['total_count'] == 0:
+            self.output_embed = Embed(title='作品が見つからなかったよ', color=0xff0000)
+            return False
+        
+        work = json['works'][0]
         title = work['title'] or ''
         title_en = work['title_en'] or ''
         media_text = work['media_text'] or ''
@@ -27,8 +41,11 @@ class Anime:
         recommended_url = work['images']['recommended_url'] or ''
         episodes_count = work['episodes_count'] or ''
         season_name_text = work['season_name_text'] or ''
+        self.total_count = json['total_count'] or ''
+        self.prev_page = json['prev_page']
+        self.next_page = json['next_page']
 
-        embed = discord.Embed(title=title, description=title_en)
+        embed: Embed = Embed(title=title, description=title_en, color=0x00ff00)
         if official_site_url:
             embed.add_field(name='公式サイト', value='[こちら]({0})'.format(official_site_url), inline=True)
         if wikipedia_url:
@@ -43,5 +60,8 @@ class Anime:
             embed.add_field(name='種別', value=media_text, inline=True)
         if recommended_url:
             embed.set_image(url=recommended_url)
+        if self.total_count:
+            embed.set_footer(text='Current page {0} of {1}'.format(page, self.total_count))
         
-        return embed
+        self.output_embed = embed
+        return True
