@@ -22,7 +22,8 @@ class Anime:
                 'access_token': self.TOKEN,
                 'filter_title': self.filter_title,
                 'per_page': 1,
-                'page': page
+                'page': page,
+                'sort_season': 'asc'
                 }
         query = urllib.parse.urlencode(query)
         response = requests.get('https://api.annict.com/v1/works?' + query)
