@@ -12,24 +12,28 @@ class AnimePagerView(discord.ui.View):
         super().__init__()
         self.value = None
     
-    @discord.ui.button(label='First', style=discord.ButtonStyle.blurple)
+    @discord.ui.button(label='◀◀', style=discord.ButtonStyle.blurple)
     async def first(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.anime.get_anime()
         await interaction.message.edit(embed=self.anime.output_embed, view=self)
 
-    @discord.ui.button(label='Back', style=discord.ButtonStyle.green)
+    @discord.ui.button(label='◀', style=discord.ButtonStyle.green)
     async def back(self, button: discord.ui.Button, interaction: discord.Interaction):
         if self.anime.prev_page is not None:
             self.anime.get_anime(self.anime.prev_page)
             await interaction.message.edit(embed=self.anime.output_embed, view=self)
 
-    @discord.ui.button(label='Next', style=discord.ButtonStyle.green)
+    @discord.ui.button(label='', style=discord.ButtonStyle.gray)
+    async def dummy(self, button: discord.ui.Button, interaction: discord.Interaction):
+        return
+
+    @discord.ui.button(label='▶', style=discord.ButtonStyle.green)
     async def forward(self, button: discord.ui.Button, interaction: discord.Interaction):
         if self.anime.next_page is not None:
             self.anime.get_anime(self.anime.next_page)
             await interaction.message.edit(embed=self.anime.output_embed, view=self)
 
-    @discord.ui.button(label='Last', style=discord.ButtonStyle.blurple)
+    @discord.ui.button(label='▶▶', style=discord.ButtonStyle.blurple)
     async def last(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.anime.get_anime(self.anime.total_count)
         await interaction.message.edit(embed=self.anime.output_embed, view=self)
