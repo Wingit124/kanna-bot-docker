@@ -1,16 +1,21 @@
 import discord
-from discord import message
-from discord.ui import view
+from discord.embeds import Embed
+from discord.message import Message
 from anime.anime import Anime
 
 
 class AnimePagerView(discord.ui.View):
 
     anime: Anime
+    message: Message
 
     def __init__(self):
         super().__init__()
-        self.value = None
+        self.timeout = 10
+
+    async def on_timeout(self) -> None:
+        await self.message.edit(embed=self.anime.output_embed.set_footer(text='Time out.'), view=None)
+        return await super().on_timeout()
     
     @discord.ui.button(label='◀︎◀︎', style=discord.ButtonStyle.blurple)
     async def first(self, button: discord.ui.Button, interaction: discord.Interaction):

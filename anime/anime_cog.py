@@ -15,7 +15,7 @@ class AnimeCog(commands.Cog):
         if anime.get_anime():
             view: AnimePagerView = AnimePagerView()
             view.anime = anime
-            await context.send(embed=anime.output_embed, view=view)
+            view.message = await context.send(embed=anime.output_embed, view=view)
         else:
             await context.send(embed=anime.output_embed)
 

@@ -33,18 +33,18 @@ class Anime:
             return False
         
         work = json['works'][0]
-        title = work['title'] or ''
-        title_en = work['title_en'] or ''
-        media_text = work['media_text'] or ''
-        official_site_url = work['official_site_url'] or ''
-        wikipedia_url = work['wikipedia_url'] or ''
-        twitter_username = work['twitter_username'] or ''
-        recommended_url = work['images']['recommended_url'] or ''
-        episodes_count = work['episodes_count'] or ''
-        season_name_text = work['season_name_text'] or ''
-        self.total_count = json['total_count'] or ''
-        self.prev_page = json['prev_page']
-        self.next_page = json['next_page']
+        title = work.get('title') or ''
+        title_en = work.get('title_en') or ''
+        media_text = work.get('media_text') or ''
+        official_site_url = work.get('official_site_url') or ''
+        wikipedia_url = work.get('wikipedia_url') or ''
+        twitter_username = work.get('twitter_username') or ''
+        recommended_url = work.get('images').get('recommended_url') or ''
+        episodes_count = work.get('episodes_count') or ''
+        season_name_text = work.get('season_name_text') or ''
+        self.total_count = json.get('total_count') or ''
+        self.prev_page = json.get('prev_page')
+        self.next_page = json.get('next_page')
 
         embed: Embed = Embed(title=title, description=title_en, color=0x00ff00)
         if official_site_url:
