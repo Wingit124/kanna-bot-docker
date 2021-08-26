@@ -1,5 +1,4 @@
 import discord
-from discord.embeds import Embed
 from discord.message import Message
 from anime.anime import Anime
 
