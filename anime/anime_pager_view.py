@@ -10,7 +10,6 @@ class AnimePagerView(discord.ui.View):
 
     def __init__(self):
         super().__init__()
-        self.timeout = 10
 
     async def on_timeout(self) -> None:
         await self.message.edit(embed=self.anime.output_embed.set_footer(text='Time out.'), view=None)
