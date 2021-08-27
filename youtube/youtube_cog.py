@@ -66,10 +66,11 @@ class YoutubeCog(commands.Cog):
 
         player = await YTDLSource.from_url(url, loop=self.bot.loop, stream=True)
         context.voice_client.play(player, after=lambda e: print(f'Player error: {e}') if e else None)
-        await context.send(embed=Embed(title='Now playing', description=player.title, color=0x00ff00))
+        await context.send(embed=Embed(title='さいせいちゅう。', description=player.title, color=0x00ff00))
 
     @commands.command(name='disconnect', aliases=['dc'])
     async def disconnect(self, context: Context):
+        await context.send(embed=Embed(title='またね', color=0x0000ff))
         await context.voice_client.disconnect()
 
 def setup(bot):
