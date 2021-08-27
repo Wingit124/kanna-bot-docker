@@ -1,4 +1,5 @@
 import asyncio
+from os import name
 import discord
 import youtube_dl
 from discord.embeds import Embed
@@ -65,8 +66,11 @@ class YoutubeCog(commands.Cog):
             await context.message.author.voice.channel.connect()
 
         player = await YTDLSource.from_url(url, loop=self.bot.loop, stream=True)
-        context.voice_client.play(player, after=lambda e: print(f'Player error: {e}') if e else None)
-        await context.send(embed=Embed(title='さいせいちゅう。', description=player.title, color=0x00ff00))
+        context.voice_client.play(player, after=lambda e: print(f'Player error: {e}') if e else print('finished'))
+        embed: Embed = Embed(title='さいせいちゅう', color=0x00ff00)
+        embed.add_field(name='タイトル', value=player.title, inline=True)
+        embed.add_field(name='ダウンロード', value='[こちら]({0})'.format(player.url))
+        await context.send(embed=embed, color=0x00ff00)
 
     @commands.command(name='disconnect', aliases=['dc'])
     async def disconnect(self, context: Context):
