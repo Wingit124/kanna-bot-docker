@@ -1,4 +1,3 @@
-from discord import embeds
 from discord.ext import commands
 from anime.anime import Anime
 from anime.anime_pager_view import AnimePagerView

@@ -1,4 +1,3 @@
-from typing import Counter
 from discord.embeds import Embed
 import requests
 import urllib.parse
