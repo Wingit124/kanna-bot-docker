@@ -70,7 +70,7 @@ class YoutubeCog(commands.Cog):
         embed: Embed = Embed(title='さいせいちゅう', color=0x00ff00)
         embed.add_field(name='タイトル', value=player.title, inline=True)
         embed.add_field(name='ダウンロード', value='[こちら]({0})'.format(player.url))
-        await context.send(embed=embed, color=0x00ff00)
+        await context.send(embed=embed)
 
     @commands.command(name='disconnect', aliases=['dc'])
     async def disconnect(self, context: Context):
