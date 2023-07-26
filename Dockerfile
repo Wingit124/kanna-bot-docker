@@ -1,7 +1,9 @@
 FROM python:3.11
-WORKDIR /bot
-COPY requirements.txt /bot/
+
 RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
-COPY . /bot
+RUN pip install discord.py
+RUN pip install pynacl
+RUN pip install requests
+RUN pip install dotenv
+
 CMD python main.py

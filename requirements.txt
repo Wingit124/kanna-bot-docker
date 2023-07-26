@@ -1,4 +1,0 @@
-discord.py[voice]
-pynacl
-requests
-dotenv
