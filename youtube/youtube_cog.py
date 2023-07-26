@@ -1,12 +1,13 @@
 import asyncio
 from os import name
 import discord
-import youtube_dl
+import yt_dlp
+from discord import app_commands
 from discord.embeds import Embed
 from discord.ext import commands
 from discord.ext.commands.context import Context
 
-youtube_dl.utils.bug_reports_message = lambda: ''
+yt_dlp.utils.bug_reports_message = lambda: ''
 
 ytdl_format_options = {
     'format': 'bestaudio/best',
@@ -26,7 +27,7 @@ ffmpeg_options = {
     'options': '-vn'
 }
 
-ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
+ytdl = yt_dlp.YoutubeDL(ytdl_format_options)
 
 
 class YTDLSource(discord.PCMVolumeTransformer):
@@ -52,30 +53,41 @@ class YTDLSource(discord.PCMVolumeTransformer):
 
 
 class YoutubeCog(commands.Cog):
+
     def __init__(self, bot):
         self.bot = bot
+    
+    @commands.Cog.listener()
+    async def on_ready(self):
+        print('Successfully loaded: YoutubeCog')
+        await self.bot.tree.sync()
 
-    @commands.command(name='youtube_play', aliases=['yp'])
-    async def youtube_play(self, context: Context, url):
+    @app_commands.command(name='youtube', description='指定したYoutubeの動画を再生するよ')
+    async def youtube_play(self, context: discord.Interaction, url: str):
 
-        if not context.message.author.voice:
-            await context.send(embed=Embed(title='ボイスチャンネルに参加してね', color=0xff0000))
+        await context.response.defer(thinking=True)
+
+        if context.user.voice is None:
+            await context.response.send_message('ボイスチャンネルに参加してね', ephemeral=True)
             return
 
-        if context.voice_client is None:
-            await context.message.author.voice.channel.connect()
+        if context.guild.voice_client is None:
+            await context.user.voice.channel.connect()
 
         player = await YTDLSource.from_url(url, loop=self.bot.loop, stream=True)
-        context.voice_client.play(player, after=lambda e: print(f'Player error: {e}') if e else print('finished'))
-        embed: Embed = Embed(title='さいせいちゅう', color=0x00ff00)
-        embed.add_field(name='タイトル', value=player.title, inline=True)
+        context.guild.voice_client.play(player, after=lambda e: print(f'Player error: {e}') if e else print('finished'))
+        embed: Embed = Embed(title='再生中:notes:', color=0x00ff00)
+        embed.add_field(name='タイトル', value=player.title, inline=False)
         embed.add_field(name='ダウンロード', value='[こちら]({0})'.format(player.url))
-        await context.send(embed=embed)
+        await context.followup.send(embed=embed)
 
-    @commands.command(name='disconnect', aliases=['dc'])
-    async def disconnect(self, context: Context):
-        await context.send(embed=Embed(title='またね', color=0x0000ff))
-        await context.voice_client.disconnect()
+    @app_commands.command(name='bye', description='ボイスチャンネルから抜けるよ')
+    async def disconnect(self, context: discord.Interaction):
+        if context.guild.voice_client is None:
+            await context.response.send_message('ボイスチャンネルに参加してないよ', ephemeral=True)
+            return
+        await context.response.send_message('またね', ephemeral=True)
+        await context.guild.voice_client.disconnect()
 
 def setup(bot):
     return bot.add_cog(YoutubeCog(bot))

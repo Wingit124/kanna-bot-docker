@@ -1,0 +1,5 @@
+*.env
+anime/__pycache__/
+help/__pycache__/
+othello/__pycache__/
+youtube/__pycache__/

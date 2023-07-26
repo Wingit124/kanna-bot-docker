@@ -1,12 +1,12 @@
 from discord.embeds import Embed
+import os
 import requests
 import urllib.parse
 
 
 class Anime:
 
-    TOKEN: str = 'X6nbfeLPhNdGZ8_uWn7PSSXFh4xkwxeT2P_igZUNjmo'
-
+    TOKEN = os.environ.get('ANNICT_TOKEN')
     filter_title: str
     prev_page: int
     next_page: int

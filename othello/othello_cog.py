@@ -6,9 +6,13 @@ class OthelloCog(commands.Cog):
 
     othellos = {}
 
-    # 初期化処理
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        print('Successfully loaded: OthelloCog')
+        await self.bot.tree.sync()
 
     @commands.command(name='othello_start', aliases=['os'])
     async def start(self, context):

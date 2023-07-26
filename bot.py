@@ -1,19 +1,36 @@
-from discord.ext.commands import Bot
-from youtube import youtube
-from othello import othello
-from anime import anime
+import os
+from dotenv import load_dotenv
+import asyncio
+import discord
+from discord.ext import commands
+from help.help_command import CustomHelpCommand
 
+load_dotenv()
 
-TOKEN = 'ODczNDQyODg1NjI0NzkxMDgx.YQ4fEw.niRIHtJN2FD_Q9mN2ge-NRuLB0Y'
+TOKEN = os.environ.get('DISCORD_BOT_TOKEN')
 
-bot = Bot(command_prefix=['d:','D:'])
-bot.load_extension('youtube.youtube_cog')
-bot.load_extension('othello.othello_cog')
-bot.load_extension('anime.anime_cog')
+EXTENSIONS = [
+    'youtube.youtube_cog',
+    'anime.anime_cog'
+]
 
+intents = discord.Intents.default()
+intents.members = False
+intents.message_content = True
+
+bot = commands.Bot(command_prefix='d:', case_insensitive=False, intents=intents, help_command=CustomHelpCommand())
 
 @bot.event
 async def on_ready():
     print('Logged in as {0}!'.format(bot.user.name))
 
-bot.run(TOKEN)
+async def load_extensions():
+    for cog in EXTENSIONS:
+        await bot.load_extension(cog)
+
+async def main():
+    async with bot:
+        await load_extensions()
+        await bot.start(TOKEN)
+
+asyncio.run(main())
