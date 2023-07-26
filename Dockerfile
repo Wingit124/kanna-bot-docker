@@ -5,6 +5,7 @@ RUN pip install --upgrade pip
 RUN pip install discord.py
 RUN pip install pynacl
 RUN pip install requests
+RUN pip install python-dotenv
 COPY . /bot
 
 CMD python main.py
