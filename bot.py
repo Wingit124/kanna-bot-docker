@@ -10,7 +10,6 @@ load_dotenv()
 TOKEN = os.environ.get('DISCORD_BOT_TOKEN')
 
 EXTENSIONS = [
-    'youtube.youtube_cog',
     'anime.anime_cog'
 ]
 
