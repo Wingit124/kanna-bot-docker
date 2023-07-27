@@ -38,9 +38,12 @@ class MinecraftInfo:
     def fetch(self) -> Embed:
         self.connect()
         self.status = self.instance.state['Name']
+        ipv4 = self.instance.public_ip_address
         embed: Embed = Embed(title='Minecraftサーバー情報', color=0x00b0f4, timestamp=datetime.datetime.utcnow())
         embed.add_field(name='状態', value=self.STATUS_DICT[self.status], inline=True)
-        embed.add_field(name='IPv4', value='||{0}||'.format(self.instance.public_ip_address), inline=True)
+        if ipv4:
+            embed.add_field(name='IPv4', value=ipv4, inline=True)
+            embed.add_field(name='Dynmap', value='[こちら](http://{0}:8123)'.format(ipv4), inline=False)
         embed.set_footer(text='いたずらしないでね;o;')
         return embed
     
