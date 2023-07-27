@@ -10,7 +10,8 @@ load_dotenv()
 TOKEN = os.environ.get('DISCORD_BOT_TOKEN')
 
 EXTENSIONS = [
-    'anime.anime_cog'
+    'anime.anime_cog',
+    'minecraft.minecraft_cog'
 ]
 
 intents = discord.Intents.default()

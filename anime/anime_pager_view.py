@@ -7,11 +7,14 @@ class AnimePagerView(discord.ui.View):
 
     anime: Anime
 
-    def __init__(self):
+    def __init__(self, anime: Anime):
+        self.anime = anime
         super().__init__()
 
     async def on_timeout(self) -> None:
         #await self.message.edit(embed=self.anime.output_embed.set_footer(text='Time out.'), view=None)
+        self.clear_items()
+        self.anime = None
         return await super().on_timeout()
     
     @discord.ui.button(label='◀︎◀︎', style=discord.ButtonStyle.blurple)

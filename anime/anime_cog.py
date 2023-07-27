@@ -19,11 +19,10 @@ class AnimeCog(commands.Cog):
     async def search_anime(self, context: discord.Interaction, title: str):
         anime: Anime = Anime(title)
         if anime.get_anime():
-            view: AnimePagerView = AnimePagerView()
-            view.anime = anime
+            view: AnimePagerView = AnimePagerView(anime)
             await context.response.send_message(embed=anime.output_embed, view=view) 
         else:
-            await context.response.send_message(embed=anime.output_embed)
+            await context.response.send_message(anime.error, ephemeral=True)
 
 def setup(bot):
     return bot.add_cog(AnimeCog(bot))

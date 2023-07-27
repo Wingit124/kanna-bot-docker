@@ -12,6 +12,7 @@ class Anime:
     next_page: int
     total_count: int
     output_embed: Embed
+    error: str = 'エラーが発生したよ'
 
     def __init__(self, filter_title):
         self.filter_title = filter_title
@@ -28,7 +29,7 @@ class Anime:
         response = requests.get('https://api.annict.com/v1/works?' + query)
         json = response.json()
         if json['total_count'] == 0:
-            self.output_embed = Embed(title='作品が見つからなかったよ', color=0xff0000)
+            self.error = '作品が見つからなかったよ'
             return False
         
         work = json['works'][0]
