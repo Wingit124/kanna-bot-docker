@@ -2,6 +2,7 @@ from discord.embeds import Embed
 import os
 import requests
 import urllib.parse
+import datetime
 
 
 class Anime:
@@ -46,7 +47,7 @@ class Anime:
         self.prev_page = json.get('prev_page')
         self.next_page = json.get('next_page')
 
-        embed: Embed = Embed(title=title, description=title_en, color=0x00ff00)
+        embed: Embed = Embed(title=title, description=title_en, color=0x00DFA2, timestamp=datetime.datetime.utcnow())
         if official_site_url:
             embed.add_field(name='公式サイト', value='[こちら]({0})'.format(official_site_url), inline=True)
         if wikipedia_url:

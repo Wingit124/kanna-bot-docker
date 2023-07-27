@@ -38,10 +38,10 @@ class MinecraftInfo:
     def fetch(self) -> Embed:
         self.connect()
         self.status = self.instance.state['Name']
-        embed: Embed = Embed(title='Minecraftサーバー情報', color=0x0000ff)
+        embed: Embed = Embed(title='Minecraftサーバー情報', color=0x00b0f4, timestamp=datetime.datetime.utcnow())
         embed.add_field(name='状態', value=self.STATUS_DICT[self.status], inline=True)
         embed.add_field(name='IPv4', value='||{0}||'.format(self.instance.public_ip_address), inline=True)
-        embed.set_footer(text=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).strftime('%Y年%m月%d日 %H:%M:%S'))
+        embed.set_footer(text='いたずらしないでね;o;')
         return embed
     
     def start(self) -> Embed:
