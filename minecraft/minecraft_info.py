@@ -92,7 +92,7 @@ class MinecraftInfo:
         if instance_type:
             embed.add_field(name='タイプ', value=instance_type, inline=True)
             if self.status == 'running':
-                embed.add_field(name='料金', value='{0}USD/時'.format(self.fetch_price(instance_type)), inline=True)
+                embed.add_field(name='料金', value='{0}＄/h'.format(self.fetch_price(instance_type)), inline=True)
         embed.set_footer(text='いたずらしないでね;o;')
         return embed
     
