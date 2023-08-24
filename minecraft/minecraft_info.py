@@ -88,12 +88,12 @@ class MinecraftInfo:
         embed.add_field(name='状態', value=self.STATUS_DICT[self.status], inline=True)
         if ipv4:
             embed.add_field(name='IPv4', value=ipv4, inline=True)
-            embed.add_field(name='Dynmap', value='[こちら](http://{0}:8123)'.format(ipv4), inline=True)
+            embed.add_field(name='BlueMap', value='[こちら](http://{0}:8123)'.format(ipv4), inline=True)
         if instance_type:
             embed.add_field(name='タイプ', value=instance_type, inline=True)
             if self.status == 'running':
                 embed.add_field(name='料金', value='{0}＄/h'.format(self.fetch_price(instance_type)), inline=True)
-        embed.set_footer(text='いたずらしないでね;o;')
+        embed.set_footer(text='IPv4が表示されない場合は更新ボタンを押してね')
         return embed
     
     def start(self) -> Embed:
