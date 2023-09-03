@@ -16,6 +16,15 @@ class MinecraftInfo:
         'stopped' : ':red_circle:停止済み'
     }
 
+    STATUS_MESSAGE = {
+        'pending' : '更新ボタンを押してね',
+        'running' : 'サーバーに接続できます（タイムラグあり）',
+        'shutting-down' : 'このメッセージが表示されていないことを祈ります',
+        'terminated' : 'このメッセージが表示されていないことを祈ります',
+        'stopping' : ':更新ボタンを押してね',
+        'stopped' : 'サーバーに接続するには起動ボタンを押してね'
+    }
+
     AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
     AWS_REGION_NAME = os.environ.get('AWS_REGION_NAME')
@@ -117,11 +126,12 @@ class MinecraftInfo:
             self.update_record(domain_name=domain_name, host=ipv4)
             embed.add_field(name='サーバー名', value=domain_name, inline=True)
             embed.add_field(name='BlueMap', value='[こちら](http://{0}:8123)'.format(domain_name), inline=True)
+            embed.set_footer(text='')
         if instance_type:
             embed.add_field(name='タイプ', value=instance_type, inline=True)
-            if self.status == 'running':
-                embed.add_field(name='料金', value='{0}＄/h'.format(self.fetch_price(instance_type)), inline=True)
-        embed.set_footer(text='IPv4が表示されない場合は更新ボタンを押してね')
+            #if self.status == 'running':
+                #embed.add_field(name='料金', value='{0}＄/h'.format(self.fetch_price(instance_type)), inline=True)
+        embed.set_footer(text=self.STATUS_MESSAGE[self.status])
         return embed
     
     def start(self) -> Embed:
