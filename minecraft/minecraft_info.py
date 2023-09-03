@@ -78,6 +78,32 @@ class MinecraftInfo:
             for v2 in v['priceDimensions'].values():
                 price_per_hour = float(v2['pricePerUnit']['USD'])
         return price_per_hour
+    
+    def update_record(self, domain_name, host):
+        zone_id = os.environ.get('HOST_ZONE_ID')
+        client = boto3.client('route53')
+        batch = {
+            "Comment": "optional comment about the changes in this change batch request",
+            "Changes": [
+                {
+                    "Action": "UPSERT",
+                    "ResourceRecordSet": {
+                        "Name": domain_name,
+                        "Type": "A",
+                        "TTL": 300,
+                        "ResourceRecords": [
+                            {
+                            "Value": host
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+        response = client.change_resource_record_sets(
+            HostedZoneId=zone_id,
+            ChangeBatch=batch
+        )
 
     def fetch(self) -> Embed:
         self.connect()
@@ -87,8 +113,10 @@ class MinecraftInfo:
         embed: Embed = Embed(title='Minecraftサーバー情報', color=0x00b0f4, timestamp=datetime.datetime.utcnow())
         embed.add_field(name='状態', value=self.STATUS_DICT[self.status], inline=True)
         if ipv4:
-            embed.add_field(name='IPv4', value=ipv4, inline=True)
-            embed.add_field(name='BlueMap', value='[こちら](http://{0}:8123)'.format(ipv4), inline=True)
+            domain_name = os.environ.get('MC_DOMAIN_NAME')
+            self.update_record(domain_name=domain_name, host=ipv4)
+            embed.add_field(name='サーバー名', value=domain_name, inline=True)
+            embed.add_field(name='BlueMap', value='[こちら](http://{0}:8123)'.format(domain_name), inline=True)
         if instance_type:
             embed.add_field(name='タイプ', value=instance_type, inline=True)
             if self.status == 'running':
