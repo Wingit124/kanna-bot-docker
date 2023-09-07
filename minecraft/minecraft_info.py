@@ -37,7 +37,7 @@ class MinecraftInfo:
 
     def __init__(self):
         self.connect()
-        self.connect_pricing()
+        #self.connect_pricing()
 
     def connect(self):
         self.instance = boto3.resource(
@@ -124,7 +124,7 @@ class MinecraftInfo:
         if ipv4:
             domain_name = os.environ.get('MC_DOMAIN_NAME')
             self.update_record(domain_name=domain_name, host=ipv4)
-            embed.add_field(name='サーバー名', value=domain_name, inline=True)
+            embed.add_field(name='サーバー名', value='`{0}`'.format(domain_name), inline=True)
             embed.add_field(name='BlueMap', value='[こちら](http://{0}:8123)'.format(domain_name), inline=True)
             embed.set_footer(text='')
         if instance_type:
