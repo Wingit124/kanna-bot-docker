@@ -18,9 +18,16 @@ ytdl_format_options = {
     'ignoreerrors': False,
     'logtostderr': False,
     'quiet': True,
-    'no_warnings': True,
     'default_search': 'auto',
-    'source_address': '0.0.0.0'
+    'source_address': '0.0.0.0', 
+    'reconnect': 1,
+    'reconnect_streamed': 1,
+    'reconnect_delay_max': 5,
+    'postprocessors': [{
+        'key': 'FFmpegExtractAudio',
+        'preferredcodec': 'mp3',
+        'preferredquality': '192',
+    }]
 }
 
 ffmpeg_options = {
