@@ -7,6 +7,7 @@ RUN pip install pynacl
 RUN pip install requests
 RUN pip install python-dotenv
 RUN pip install boto3
+RUN pip install yt-dlp
 COPY . /bot
 
 CMD python main.py
