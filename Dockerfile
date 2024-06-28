@@ -17,4 +17,4 @@ RUN rm -rf /var/lib/apt/lists/*
 
 COPY . /bot
 
-CMD python main.py
+CMD python -u main.py
