@@ -69,8 +69,8 @@ class YoutubeCog(commands.Cog):
         print('Successfully loaded: YoutubeCog')
         await self.bot.tree.sync()
 
-    @app_commands.command(name='youtube', description='指定したYoutubeの動画を再生するよ')
-    async def youtube_play(self, context: discord.Interaction, url: str):
+    @app_commands.command(name='youtube', description='Youtubeの動画を再生するよ')
+    async def youtube_play(self, context: discord.Interaction, title_or_url: str):
 
         await context.response.defer(thinking=True)
 
@@ -81,7 +81,7 @@ class YoutubeCog(commands.Cog):
         if context.guild.voice_client is None:
             await context.user.voice.channel.connect()
 
-        player = await YTDLSource.from_url(url, loop=self.bot.loop, stream=True)
+        player = await YTDLSource.from_url(title_or_url, loop=self.bot.loop, stream=True)
         context.guild.voice_client.play(player, after=lambda e: print(f'Player error: {e}') if e else print('finished'))
         embed: Embed = Embed(title='再生中:notes:', color=0x00ff00)
         embed.add_field(name='タイトル', value=player.title, inline=False)
