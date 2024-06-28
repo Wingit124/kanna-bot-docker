@@ -11,7 +11,8 @@ TOKEN = os.environ.get('DISCORD_BOT_TOKEN')
 
 EXTENSIONS = [
     'anime.anime_cog',
-    'minecraft.minecraft_cog'
+    'minecraft.minecraft_cog',
+    'youtube.youtube_cog'
 ]
 
 intents = discord.Intents.default()
