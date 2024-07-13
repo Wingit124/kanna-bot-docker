@@ -1,65 +1,14 @@
-import asyncio
 from os import name
 import discord
-import yt_dlp
 from discord import app_commands
 from discord.embeds import Embed
 from discord.ext import commands
-from discord.ext.commands.context import Context
-
-yt_dlp.utils.bug_reports_message = lambda: ''
-
-ytdl_format_options = {
-    'format': 'bestaudio/best',
-    'outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s',
-    'restrictfilenames': True,
-    'noplaylist': True,
-    'nocheckcertificate': True,
-    'ignoreerrors': False,
-    'logtostderr': False,
-    'quiet': True,
-    'default_search': 'auto',
-    'source_address': '0.0.0.0', 
-    'reconnect': 1,
-    'reconnect_streamed': 1,
-    'reconnect_delay_max': 5,
-    'postprocessors': [{
-        'key': 'FFmpegExtractAudio',
-        'preferredcodec': 'mp3',
-        'preferredquality': '192',
-    }]
-}
-
-ffmpeg_options = {
-    'options': '-vn'
-}
-
-ytdl = yt_dlp.YoutubeDL(ytdl_format_options)
-
-
-class YTDLSource(discord.PCMVolumeTransformer):
-    def __init__(self, source, *, data, volume=0.1):
-        super().__init__(source, volume)
-
-        self.data = data
-
-        self.title = data.get('title')
-        self.url = data.get('url')
-
-    @classmethod
-    async def from_url(cls, url, loop=None, stream=False):
-        loop = loop or asyncio.get_event_loop()
-        data = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=not stream))
-
-        if 'entries' in data:
-            # take first item from a playlist
-            data = data['entries'][0]
-
-        filename = data['url'] if stream else ytdl.prepare_filename(data)
-        return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
-
+from youtube.utils import YTDLSource
+from youtube.youtube import Youtube
 
 class YoutubeCog(commands.Cog):
+
+    youtubes: dict[Youtube] = {}
 
     def __init__(self, bot):
         self.bot = bot
@@ -81,11 +30,14 @@ class YoutubeCog(commands.Cog):
         if context.guild.voice_client is None:
             await context.user.voice.channel.connect()
 
-        player = await YTDLSource.from_url(title_or_url, loop=self.bot.loop, stream=True)
-        context.guild.voice_client.play(player, after=lambda e: print(f'Player error: {e}') if e else print('finished'))
-        embed: Embed = Embed(title='再生中:notes:', color=0x00ff00)
-        embed.add_field(name='タイトル', value=player.title, inline=False)
-        embed.add_field(name='ダウンロード', value='[こちら]({0})'.format(player.url))
+        if not context.guild.id in self.youtubes:
+            self.youtubes[context.guild.id] = Youtube(client=context.guild.voice_client)
+
+        youtube: Youtube = self.youtubes[context.guild_id]
+
+        data = await YTDLSource.data_from_url(url=title_or_url)
+        youtube.add_queue(data=data)
+        embed = youtube.play()
         await context.followup.send(embed=embed)
 
     @app_commands.command(name='bye', description='ボイスチャンネルから抜けるよ')
