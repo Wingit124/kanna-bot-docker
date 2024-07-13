@@ -3,10 +3,13 @@ from youtube.utils import YTDLSource
 import datetime
 import discord
 
+MAX_HISTORY_COUNT: int = 5
+
 class Youtube:
     client: discord.voice_client.VoiceClient
     # キュー
     queue: list[dict] = []
+    history: list[dict] = []
     is_playing: bool = False
 
     def __init__(self, client: discord.voice_client.VoiceClient) -> None:
@@ -33,6 +36,7 @@ class Youtube:
         channel_url = data['channel_url'] or ''
         duration = data['duration_string'] or ''
         queue_list = self.queue_to_string()
+        history_list = self.history_to_string()
         thumbnail_url = data['thumbnail'] or ''
         queue_count = len(self.queue)
         # レスポンスを作成
@@ -43,6 +47,8 @@ class Youtube:
             embed.add_field(name='チャンネル', value='[{0}]({1})'.format(channel_name, channel_url), inline=True)
         if duration:
             embed.add_field(name='再生時間', value=duration, inline=True)
+        if history_list:
+            embed.add_field(name='再生履歴'.format(MAX_HISTORY_COUNT), value=history_list, inline=False)
         if queue_list:
             embed.add_field(name='キュー', value=queue_list, inline=False)
         if thumbnail_url:
@@ -52,7 +58,10 @@ class Youtube:
         return embed
     
     def play_next(self):
+        self.history.append(self.queue[0])
         self.queue.pop(0)
+        if len(self.history) > MAX_HISTORY_COUNT:
+            self.history.pop(0)
         self.play()
     
     def on_error(self, error):
@@ -65,9 +74,19 @@ class Youtube:
 
     def queue_to_string(self):
         output: str = ''
-        display_index: int = 1
+        display_index: int = 0
         for data in self.queue:
+            # 再生中の曲はキューに表示したくない
+            if display_index == 0:
+                display_index += 1
+                continue
             output += '{0}. {1}({2})\n'.format(display_index, data['title'], data['duration_string'])
             display_index += 1
+        return output
+    
+    def history_to_string(self):
+        output: str = ''
+        for data in self.history:
+            output += '- {0}({1})\n'.format(data['title'], data['duration_string'])
         return output
 

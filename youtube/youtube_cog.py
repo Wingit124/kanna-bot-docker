@@ -42,11 +42,14 @@ class YoutubeCog(commands.Cog):
 
     @app_commands.command(name='bye', description='ボイスチャンネルから抜けるよ')
     async def disconnect(self, context: discord.Interaction):
+        # セッションをリセット
+        self.youtubes[context.guild.id] = None
+        # ボイスチャンネルに接続してるか
         if context.guild.voice_client is None:
             await context.response.send_message('ボイスチャンネルに参加してないよ', ephemeral=True)
-            return
-        await context.response.send_message('またね', ephemeral=True)
-        await context.guild.voice_client.disconnect()
+        else:
+            await context.response.send_message('またね', ephemeral=True)
+            await context.guild.voice_client.disconnect()
 
 def setup(bot):
     return bot.add_cog(YoutubeCog(bot))
