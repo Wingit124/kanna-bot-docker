@@ -26,12 +26,12 @@ class Youtube:
     # 再生開始
     def play(self, stream=True):
         # 再生するべきキューが無い場合は中断
-        self.now_playing = self.queue[0]
-        if not self.now_playing:
+        if not self.queue:
+            self.now_playing = None
             return
-        
         # 再生を開始
         if not self.client.is_playing():
+            self.now_playing = self.queue[0]
             player = YTDLSource.make_player(data=self.now_playing, stream=stream)
             self.client.play(player, after=lambda e: self.on_error(error=e) if e else self.on_finish())
     

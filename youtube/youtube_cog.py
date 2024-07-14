@@ -58,7 +58,6 @@ class YoutubeCog(commands.Cog):
 
     @tasks.loop(seconds=5)
     async def check_queue(self):
-        print('hoge')
         for youtube in self.youtubes.values():
             if youtube.is_auto_skipped:
                 youtube.is_auto_skipped = False
