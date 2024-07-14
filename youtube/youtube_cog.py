@@ -40,7 +40,9 @@ class YoutubeCog(commands.Cog):
         view = YoutubeControlView(youtube=youtube)
         # すでにセッションに紐づいたメッセージがある場合は先に消しておく
         if youtube.message:
-            await context.followup.delete_message(youtube.message.id)
+            channel = self.bot.get_channel(youtube.message.channel.id)
+            message = await channel.fetch_message(youtube.message.id)
+            await message.delete()
         # メッセージを送信
         message = await context.followup.send(embed=embed, view=view)
         youtube.message = message
