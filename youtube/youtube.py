@@ -12,7 +12,8 @@ class Youtube:
     queue: list[dict] = []
     history: list[dict] = []
     now_playing: dict = None
-    is_user_action: bool = True
+    is_user_action: bool = False
+    is_auto_skipped: bool = False
 
     def __init__(self, client: discord.voice_client.VoiceClient) -> None:
         self.client = client
@@ -41,6 +42,7 @@ class Youtube:
         if len(self.history) > MAX_HISTORY_COUNT:
             self.history.pop(0)
         self.is_user_action = is_user_action
+        self.is_auto_skipped = not is_user_action
         self.client.stop()
         self.play()
 
@@ -71,7 +73,7 @@ class Youtube:
         if title:
             embed = Embed(title='"{0}"を再生中:notes:'.format(title), description='', color=0xFF7F7F, timestamp=datetime.datetime.now())
         else:
-            embed = Embed(title='再生待機中:zzz:'.format(title), description='再生待機中だよ`/youtube`を使用して好きな動画をキューに追加してね', color=0xFF7F7F, timestamp=datetime.datetime.now())
+            embed = Embed(title='再生待機中:zzz:'.format(title), description='再生待機中だよ`追加`ボタンをクリックして好きな動画をキューに追加してね', color=0xFF7F7F, timestamp=datetime.datetime.now())
         if original_url:
             embed.add_field(name='ビデオ', value='[こちら]({0})'.format(original_url), inline=True)
         if channel_name and channel_url:
