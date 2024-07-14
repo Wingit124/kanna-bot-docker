@@ -16,7 +16,7 @@ class YoutubeCog(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         print('Successfully loaded: YoutubeCog')
-        self.check_queue.start()
+        self.check_update.start()
         await self.bot.tree.sync()
 
     @app_commands.command(name='youtube', description='Youtubeの動画を再生するよ')
@@ -58,14 +58,12 @@ class YoutubeCog(commands.Cog):
             await context.response.send_message('またね', ephemeral=True)
             await context.guild.voice_client.disconnect()
 
-    @tasks.loop(seconds=5)
-    async def check_queue(self):
+    @tasks.loop(seconds=1)
+    async def check_update(self):
         for youtube in self.youtubes.values():
-            if youtube.is_auto_skipped:
-                youtube.is_auto_skipped = False
-                channel = self.bot.get_channel(youtube.message.channel.id)
-                message = await channel.fetch_message(youtube.message.id)
-                await message.edit(embed=youtube.make_embed())
+            channel = self.bot.get_channel(youtube.message.channel.id)
+            message = await channel.fetch_message(youtube.message.id)
+            await message.edit(embed=youtube.make_embed())
             
 
 def setup(bot):
