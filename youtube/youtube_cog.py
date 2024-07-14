@@ -38,9 +38,12 @@ class YoutubeCog(commands.Cog):
         youtube: Youtube = self.youtubes[context.guild_id]
         embed = youtube.make_embed()
         view = YoutubeControlView(youtube=youtube)
+        # すでにセッションに紐づいたメッセージがある場合は先に消しておく
+        if youtube.message:
+            await context.followup.delete_message(youtube.message.id)
         # メッセージを送信
         message = await context.followup.send(embed=embed, view=view)
-        view.message = message
+        youtube.message = message
 
     @app_commands.command(name='bye', description='ボイスチャンネルから抜けるよ')
     async def disconnect(self, context: discord.Interaction):

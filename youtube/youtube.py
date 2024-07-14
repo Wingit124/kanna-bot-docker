@@ -6,7 +6,8 @@ import discord
 MAX_HISTORY_COUNT: int = 5
 
 class Youtube:
-    client: discord.voice_client.VoiceClient
+    message: discord.Message = None
+    client: discord.voice_client.VoiceClient = None
     # キュー
     queue: list[dict] = []
     history: list[dict] = []

@@ -7,7 +7,6 @@ from youtube.youtube_search_modal import YoutubeSearchModal
 class YoutubeControlView(discord.ui.View):
 
     youtube: Youtube
-    message: discord.Message
 
     def __init__(self, youtube: Youtube):
         self.youtube = youtube
@@ -26,7 +25,7 @@ class YoutubeControlView(discord.ui.View):
 
     @discord.ui.button(label='追加', style=discord.ButtonStyle.green)
     async def search(self, interaction: discord.Interaction, button: discord.ui.button):
-        modal = YoutubeSearchModal(youtube=self.youtube, message=self.message)
+        modal = YoutubeSearchModal(youtube=self.youtube)
         await interaction.response.send_modal(modal)
 
     @discord.ui.button(label='▶︎▶︎', style=discord.ButtonStyle.blurple)
