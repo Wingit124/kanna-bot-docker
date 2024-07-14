@@ -5,6 +5,7 @@ from discord.embeds import Embed
 from discord.ext import commands
 from youtube.utils import YTDLSource
 from youtube.youtube import Youtube
+from youtube.youtube_control_view import YoutubeControlView
 
 class YoutubeCog(commands.Cog):
 
@@ -19,7 +20,7 @@ class YoutubeCog(commands.Cog):
         await self.bot.tree.sync()
 
     @app_commands.command(name='youtube', description='Youtubeの動画を再生するよ')
-    async def youtube_play(self, context: discord.Interaction, title_or_url: str):
+    async def youtube(self, context: discord.Interaction):
 
         await context.response.defer(thinking=True)
 
@@ -33,12 +34,13 @@ class YoutubeCog(commands.Cog):
         if not context.guild.id in self.youtubes:
             self.youtubes[context.guild.id] = Youtube(client=context.guild.voice_client)
 
+        # ViewとEmbedを生成
         youtube: Youtube = self.youtubes[context.guild_id]
-
-        data = await YTDLSource.data_from_url(url=title_or_url)
-        youtube.add_queue(data=data)
-        embed = youtube.play()
-        await context.followup.send(embed=embed)
+        embed = youtube.make_embed()
+        view = YoutubeControlView(youtube=youtube)
+        # メッセージを送信
+        message = await context.followup.send(embed=embed, view=view)
+        view.message = message
 
     @app_commands.command(name='bye', description='ボイスチャンネルから抜けるよ')
     async def disconnect(self, context: discord.Interaction):

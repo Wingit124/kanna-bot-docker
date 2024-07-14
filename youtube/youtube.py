@@ -10,37 +10,67 @@ class Youtube:
     # キュー
     queue: list[dict] = []
     history: list[dict] = []
-    is_playing: bool = False
+    now_playing: dict = None
+    is_user_action: bool = True
 
     def __init__(self, client: discord.voice_client.VoiceClient) -> None:
         self.client = client
 
     def add_queue(self, data):
         self.queue.append(data)
+        if not self.client.is_playing():
+            self.play()
     
+    # 再生開始
     def play(self, stream=True):
         # 再生するべきキューが無い場合は中断
-        data = self.queue[0]
-        if not data:
+        self.now_playing = self.queue[0]
+        if not self.now_playing:
             return
         
         # 再生を開始
         if not self.client.is_playing():
-            player = YTDLSource.make_player(data=data, stream=stream)
+            player = YTDLSource.make_player(data=self.now_playing, stream=stream)
             self.client.play(player, after=lambda e: self.on_error(error=e) if e else self.on_finish())
+    
+    # 曲送り
+    def next(self, is_user_action: bool = True):
+        if len(self.queue) > 0:
+            self.history.append(self.queue.pop(0))
+        if len(self.history) > MAX_HISTORY_COUNT:
+            self.history.pop(0)
+        self.is_user_action = is_user_action
+        self.client.stop()
+        self.play()
+
+    # 曲戻し
+    def previous(self, is_user_action: bool = True):
+        if len(self.history) > 0:
+            self.queue.insert(0, self.history.pop())
+        self.is_user_action = is_user_action
+        self.client.stop()
+        self.play()
+
+    def make_embed(self):
+        data: dict = {}
+        if self.now_playing:
+            data = self.now_playing
         # 情報を取得
-        title = data['title'] or ''
-        description = ''
-        original_url = data['original_url'] or ''
-        channel_name = data['channel'] or ''
-        channel_url = data['channel_url'] or ''
-        duration = data['duration_string'] or ''
+        title = data.get('title', '')
+        original_url = data.get('original_url', '')
+        channel_name = data.get('channel', '')
+        channel_url = data.get('channel_url', '')
+        duration = data.get('duration_string', '')
+        thumbnail_url = data.get('thumbnail', '')
         queue_list = self.queue_to_string()
         history_list = self.history_to_string()
-        thumbnail_url = data['thumbnail'] or ''
         queue_count = len(self.queue)
         # レスポンスを作成
-        embed: Embed = Embed(title='"{0}"を再生中:notes:'.format(title), description=description, color=0xFF7F7F, timestamp=datetime.datetime.now())
+        embed: Embed
+        if title:
+            embed = Embed(title='"{0}"を再生中:notes:'.format(title), description='', color=0xFF7F7F, timestamp=datetime.datetime.now())
+        else:
+            embed = Embed(title='再生待機中:zzz:'.format(title), description='再生待機中だよ`/youtube`を使用して好きな動画をキューに追加してね', color=0xFF7F7F, timestamp=datetime.datetime.now())
         if original_url:
             embed.add_field(name='ビデオ', value='[こちら]({0})'.format(original_url), inline=True)
         if channel_name and channel_url:
@@ -57,20 +87,16 @@ class Youtube:
             embed.set_footer(text='Playing 1 of {0}'.format(queue_count))
         return embed
     
-    def play_next(self):
-        self.history.append(self.queue[0])
-        self.queue.pop(0)
-        if len(self.history) > MAX_HISTORY_COUNT:
-            self.history.pop(0)
-        self.play()
-    
     def on_error(self, error):
         print('Player Error: {0}'.format(error))
-        self.play_next()
+        self.next(is_user_action=False)
 
     def on_finish(self):
         print('Player Finish')
-        self.play_next()
+        if self.is_user_action:
+            self.is_user_action = False
+        else:
+            self.next(is_user_action=False)
 
     def queue_to_string(self):
         output: str = ''
