@@ -57,7 +57,7 @@ class YoutubeCog(commands.Cog):
                 channel = self.bot.get_channel(youtube.message.channel.id)
                 message = await channel.fetch_message(youtube.message.id)
                 await message.delete()
-                
+
         # ボイスチャンネルに接続してるか
         if context.guild.voice_client is None:
             await context.response.send_message('ボイスチャンネルに参加してないよ', ephemeral=True)
@@ -65,7 +65,7 @@ class YoutubeCog(commands.Cog):
             await context.response.send_message('またね', ephemeral=True)
             await context.guild.voice_client.disconnect()
 
-    @tasks.loop(seconds=1)
+    @tasks.loop(seconds=3)
     async def check_update(self):
         for youtube in self.youtubes.values():
             if youtube.message:
