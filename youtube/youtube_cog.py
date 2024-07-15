@@ -39,10 +39,7 @@ class YoutubeCog(commands.Cog):
         embed = youtube.make_embed()
         view = YoutubeControlView(youtube=youtube)
         # すでにセッションに紐づいたメッセージがある場合は先に消しておく
-        if youtube.message:
-            channel = self.bot.get_channel(youtube.message.channel.id)
-            message = await channel.fetch_message(youtube.message.id)
-            await message.delete()
+        await self.delete_message(youtube=youtube)
         # メッセージを送信
         message = await context.followup.send(embed=embed, view=view)
         youtube.message = message
@@ -50,13 +47,8 @@ class YoutubeCog(commands.Cog):
     @app_commands.command(name='bye', description='ボイスチャンネルから抜けるよ')
     async def disconnect(self, context: discord.Interaction):
         # セッションをリセット
-        if context.guild.id in self.youtubes:
-            youtube: Youtube = self.youtubes[context.guild_id]
-            del self.youtubes[context.guild.id]
-            if youtube.message:
-                channel = self.bot.get_channel(youtube.message.channel.id)
-                message = await channel.fetch_message(youtube.message.id)
-                await message.delete()
+        youtube = self.youtubes.pop(context.guild.id)
+        await self.delete_message(youtube=youtube)
 
         # ボイスチャンネルに接続してるか
         if context.guild.voice_client is None:
@@ -70,8 +62,19 @@ class YoutubeCog(commands.Cog):
         for youtube in self.youtubes.values():
             if youtube.message:
                 channel = self.bot.get_channel(youtube.message.channel.id)
+                if channel:
+                    message = await channel.fetch_message(youtube.message.id)
+                    if message:
+                        await message.edit(embed=youtube.make_embed())
+                    
+    async def delete_message(self, youtube: Youtube):
+        if youtube.message:
+            channel = self.bot.get_channel(youtube.message.channel.id)
+            if channel:
                 message = await channel.fetch_message(youtube.message.id)
-                await message.edit(embed=youtube.make_embed())
+                if message:
+                    await message.delete()
+
 
 def setup(bot):
     return bot.add_cog(YoutubeCog(bot))
