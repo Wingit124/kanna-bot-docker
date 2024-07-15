@@ -25,7 +25,7 @@ class YoutubeCog(commands.Cog):
         await context.response.defer(thinking=True)
 
         if context.user.voice is None:
-            await context.response.send_message('ボイスチャンネルに参加してね', ephemeral=True)
+            await context.followup.send('ボイスチャンネルに参加してね', ephemeral=True)
             return
 
         if context.guild.voice_client is None:
@@ -50,7 +50,14 @@ class YoutubeCog(commands.Cog):
     @app_commands.command(name='bye', description='ボイスチャンネルから抜けるよ')
     async def disconnect(self, context: discord.Interaction):
         # セッションをリセット
-        self.youtubes[context.guild.id] = None
+        if context.guild.id in self.youtubes:
+            youtube: Youtube = self.youtubes[context.guild_id]
+            del self.youtubes[context.guild.id]
+            if youtube.message:
+                channel = self.bot.get_channel(youtube.message.channel.id)
+                message = await channel.fetch_message(youtube.message.id)
+                await message.delete()
+                
         # ボイスチャンネルに接続してるか
         if context.guild.voice_client is None:
             await context.response.send_message('ボイスチャンネルに参加してないよ', ephemeral=True)
@@ -61,10 +68,10 @@ class YoutubeCog(commands.Cog):
     @tasks.loop(seconds=1)
     async def check_update(self):
         for youtube in self.youtubes.values():
-            channel = self.bot.get_channel(youtube.message.channel.id)
-            message = await channel.fetch_message(youtube.message.id)
-            await message.edit(embed=youtube.make_embed())
-            
+            if youtube.message:
+                channel = self.bot.get_channel(youtube.message.channel.id)
+                message = await channel.fetch_message(youtube.message.id)
+                await message.edit(embed=youtube.make_embed())
 
 def setup(bot):
     return bot.add_cog(YoutubeCog(bot))
