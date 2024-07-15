@@ -1,4 +1,3 @@
-from os import name
 import discord
 from discord import app_commands
 from discord.ext import tasks
@@ -35,7 +34,7 @@ class YoutubeCog(commands.Cog):
             self.youtubes[context.guild.id] = Youtube(client=context.guild.voice_client)
 
         # ViewとEmbedを生成
-        youtube: Youtube = self.youtubes[context.guild_id]
+        youtube: Youtube = self.youtubes.get(context.guild.id)
         embed = youtube.make_embed()
         view = YoutubeControlView(youtube=youtube)
         # すでにセッションに紐づいたメッセージがある場合は先に消しておく
@@ -47,7 +46,7 @@ class YoutubeCog(commands.Cog):
     @app_commands.command(name='bye', description='ボイスチャンネルから抜けるよ')
     async def disconnect(self, context: discord.Interaction):
         # セッションをリセット
-        youtube = self.youtubes.pop(context.guild.id)
+        youtube: Youtube = self.youtubes.pop(context.guild.id)
         await self.delete_message(youtube=youtube)
 
         # ボイスチャンネルに接続してるか
