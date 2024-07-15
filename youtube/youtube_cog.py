@@ -59,20 +59,28 @@ class YoutubeCog(commands.Cog):
     @tasks.loop(seconds=3)
     async def check_update(self):
         for youtube in self.youtubes.values():
-            if youtube.message:
-                channel = self.bot.get_channel(youtube.message.channel.id)
-                if channel:
-                    message = await channel.fetch_message(youtube.message.id)
-                    if message:
-                        await message.edit(embed=youtube.make_embed())
+            try:
+                message: discord.Message = youtube.message
+                if message:
+                    channel = await self.bot.fetch_channel(message.channel.id)
+                    if channel:
+                        message = await channel.fetch_message(message.id)
+                        if message:
+                            await message.edit(embed=youtube.make_embed())
+            except:
+                pass
                     
     async def delete_message(self, youtube: Youtube):
-        if youtube.message:
-            channel = self.bot.get_channel(youtube.message.channel.id)
-            if channel:
-                message = await channel.fetch_message(youtube.message.id)
-                if message:
-                    await message.delete()
+        try:
+            message: discord.Message = youtube.message
+            if message:
+                channel = await self.bot.fetch_channel(message.channel.id)
+                if channel:
+                    message = await channel.fetch_message(message.id)
+                    if message:
+                        await message.delete()
+        except:
+            pass
 
 
 def setup(bot):
