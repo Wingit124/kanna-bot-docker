@@ -23,10 +23,8 @@ class MinecraftInfoView(discord.ui.View):
         'stopped' : False
     }
 
-    minecraft_info: MinecraftInfo
-
     def __init__(self, minecraft_info: MinecraftInfo):
-        self.minecraft_info = minecraft_info
+        self.minecraft_info: MinecraftInfo = minecraft_info
         super().__init__()
 
     async def on_timeout(self) -> None:

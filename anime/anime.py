@@ -8,15 +8,14 @@ import datetime
 class Anime:
 
     TOKEN = os.environ.get('ANNICT_TOKEN')
-    filter_title: str
-    prev_page: int
-    next_page: int
-    total_count: int
-    output_embed: Embed
     error: str = 'エラーが発生したよ'
 
     def __init__(self, filter_title):
-        self.filter_title = filter_title
+        self.filter_title: str = filter_title
+        self.prev_page: int
+        self.next_page: int
+        self.total_count: int
+        self.output_embed: Embed
     
     def get_anime(self, page=1):
         query = {

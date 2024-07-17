@@ -1,14 +1,11 @@
 import discord
-from discord.message import Message
 from anime.anime import Anime
 
 
 class AnimePagerView(discord.ui.View):
 
-    anime: Anime
-
     def __init__(self, anime: Anime):
-        self.anime = anime
+        self.anime: Anime = anime
         super().__init__()
 
     async def on_timeout(self) -> None:
