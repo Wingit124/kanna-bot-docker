@@ -44,14 +44,18 @@ class YTDLSource(discord.PCMVolumeTransformer):
 
     @classmethod
     async def data_from_url(cls, url, loop=None, stream=True):
-        loop = loop or asyncio.get_event_loop()
-        data = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=not stream))
+        try:
+            loop = loop or asyncio.get_event_loop()
+            data = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=not stream))
 
-        if 'entries' in data:
-            # take first item from a playlist
-            data = data['entries'][0]
-        
-        return data
+            if 'entries' in data:
+                # take first item from a playlist
+                data = data['entries'][0]
+            
+            return data
+        except Exception as e:
+            print(f"Error in YTDLSource.data_from_url {e}")
+            return None
     
     @classmethod
     def make_player(cls, data, stream=True):

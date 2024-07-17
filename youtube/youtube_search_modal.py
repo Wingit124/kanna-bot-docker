@@ -19,10 +19,14 @@ class YoutubeSearchModal(discord.ui.Modal, title='動画をキューに追加'):
     )
 
     async def on_submit(self, interaction: discord.Interaction) -> None:
-        await interaction.response.defer(thinking=True)
+        await interaction.response.defer(thinking=True, ephemeral=True)
         data = await YTDLSource.data_from_url(url=self.url.value)
-        youtube = self.youtube()
-        if youtube:
-            youtube.add_queue(data=data)
-            await interaction.followup.edit_message(message_id=youtube.message.id, embed=youtube.make_embed())
-        await interaction.delete_original_response()
+        if data:
+            youtube = self.youtube()
+            if youtube:
+                youtube.add_queue(data=data)
+                await interaction.followup.edit_message(message_id=youtube.message.id, embed=youtube.make_embed())
+                await interaction.delete_original_response()
+        else:
+            await interaction.followup.send("動画が見つからなかったよ", ephemeral=True)
+        
