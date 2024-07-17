@@ -67,7 +67,8 @@ class YoutubeCog(commands.Cog):
                         message = await channel.fetch_message(message.id)
                         if message:
                             await message.edit(embed=youtube.make_embed())
-            except:
+            except Exception as e:
+                print(f"Error in YoutubeCog.check_update{e}")
                 pass
                     
     async def delete_message(self, youtube: Youtube):
@@ -79,7 +80,8 @@ class YoutubeCog(commands.Cog):
                     message = await channel.fetch_message(message.id)
                     if message:
                         await message.delete()
-        except:
+        except Exception as e:
+            print(f"Error in YoutubeCog.delete_message{e}")
             pass
 
 

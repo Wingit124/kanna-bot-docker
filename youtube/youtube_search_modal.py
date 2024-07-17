@@ -1,4 +1,6 @@
 import discord
+import weakref
+from typing import Callable, Optional
 import discord.ui.modal
 from youtube.utils import YTDLSource
 from youtube.youtube import Youtube
@@ -6,10 +8,8 @@ from youtube.youtube import Youtube
 
 class YoutubeSearchModal(discord.ui.Modal, title='動画をキューに追加'):
 
-    youtube: Youtube
-
     def __init__(self, youtube: Youtube):
-        self.youtube = youtube
+        self.youtube: Callable[[], Optional[Youtube]] = weakref.ref(youtube)
         super().__init__(timeout=None)
 
     url = discord.ui.TextInput(
@@ -21,6 +21,8 @@ class YoutubeSearchModal(discord.ui.Modal, title='動画をキューに追加'):
     async def on_submit(self, interaction: discord.Interaction) -> None:
         await interaction.response.defer(thinking=True)
         data = await YTDLSource.data_from_url(url=self.url.value)
-        self.youtube.add_queue(data=data)
-        await interaction.followup.edit_message(message_id=self.youtube.message.id, embed=self.youtube.make_embed())
+        youtube = self.youtube()
+        if youtube:
+            youtube.add_queue(data=data)
+            await interaction.followup.edit_message(message_id=youtube.message.id, embed=youtube.make_embed())
         await interaction.delete_original_response()

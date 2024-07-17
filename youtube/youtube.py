@@ -4,23 +4,22 @@ import datetime
 import discord
 import time
 
-MAX_HISTORY_COUNT: int = 5
-PROGRESS_BAR: str = "▬"
-PROGRESS_THUMB: str = '🔘'
-PROGRESS_SIZE: int = 30
-
 class Youtube:
-    message: discord.Message = None
-    client: discord.voice_client.VoiceClient = None
-    # キュー
-    queue: list[dict] = []
-    history: list[dict] = []
-    now_playing: dict = {}
-    is_user_action: bool = False
-    play_start_time: time = time.time()
+
+    MAX_HISTORY_COUNT: int = 5
+    PROGRESS_BAR: str = "▬"
+    PROGRESS_THUMB: str = '🔘'
+    PROGRESS_SIZE: int = 30
 
     def __init__(self, client: discord.voice_client.VoiceClient) -> None:
-        self.client = client
+        self.message: discord.Message = None
+        self.client: discord.voice_client.VoiceClient = client
+        # キュー
+        self.queue: list[dict] = []
+        self.history: list[dict] = []
+        self.now_playing: dict = {}
+        self.is_user_action: bool = False
+        self.play_start_time: time = time.time()
 
     def add_queue(self, data):
         self.queue.append(data)
@@ -44,7 +43,7 @@ class Youtube:
     def next(self, is_user_action: bool = True):
         if len(self.queue) > 0:
             self.history.append(self.queue.pop(0))
-        if len(self.history) > MAX_HISTORY_COUNT:
+        if len(self.history) > self.MAX_HISTORY_COUNT:
             self.history.pop(0)
         self.is_user_action = is_user_action
         self.client.stop()
@@ -87,7 +86,7 @@ class Youtube:
         if duration:
             embed.add_field(name='再生時間', value=self.format_seconds(seconds=duration), inline=True)
         if history_list:
-            embed.add_field(name='再生履歴'.format(MAX_HISTORY_COUNT), value=history_list, inline=False)
+            embed.add_field(name='再生履歴'.format(self.MAX_HISTORY_COUNT), value=history_list, inline=False)
         if queue_list:
             embed.add_field(name='キュー', value=queue_list, inline=False)
         if thumbnail_url:
@@ -133,9 +132,9 @@ class Youtube:
             return ''
         # プログレスバーを生成
         elapsed_ratio = elapsed_time / total_time
-        index = int(elapsed_ratio * PROGRESS_SIZE)
-        progress_bar = list(PROGRESS_BAR * (PROGRESS_SIZE - 1))
-        progress_bar.insert(index, PROGRESS_THUMB)
+        index = int(elapsed_ratio * self.PROGRESS_SIZE)
+        progress_bar = list(self.PROGRESS_BAR * (self.PROGRESS_SIZE - 1))
+        progress_bar.insert(index, self.PROGRESS_THUMB)
         progress_bar = "".join(progress_bar)
         # 時間をフォーマット
         total_time = self.format_seconds(seconds=int(total_time))
