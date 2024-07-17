@@ -7,10 +7,9 @@ from youtube.youtube_control_view import YoutubeControlView
 
 class YoutubeCog(commands.Cog):
 
-    youtubes: dict[Youtube] = {}
-
     def __init__(self, bot):
         self.bot: commands.Bot = bot
+        self.youtubes: dict[int, Youtube] = {}
     
     @commands.Cog.listener()
     async def on_ready(self):
@@ -63,9 +62,9 @@ class YoutubeCog(commands.Cog):
                 message: discord.Message = youtube.message
                 if message:
                     channel = await self.bot.fetch_channel(message.channel.id)
-                    if channel:
+                    if channel and message:
                         message = await channel.fetch_message(message.id)
-                        if message:
+                        if message and youtube:
                             await message.edit(embed=youtube.make_embed())
             except Exception as e:
                 print(f"Error in YoutubeCog.check_update{e}")
