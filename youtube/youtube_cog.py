@@ -15,6 +15,7 @@ class YoutubeCog(commands.Cog):
     async def on_ready(self):
         print('Successfully loaded: YoutubeCog')
         self.check_update.start()
+        self.check_task.start()
         await self.bot.tree.sync()
 
     @app_commands.command(name='youtube', description='Youtubeの動画を再生するよ')
@@ -57,8 +58,8 @@ class YoutubeCog(commands.Cog):
 
     @tasks.loop(seconds=3)
     async def check_update(self):
-        for youtube in self.youtubes.values():
-            try:
+        try:
+            for youtube in self.youtubes.values():
                 message: discord.Message = youtube.message
                 if message:
                     channel = await self.bot.fetch_channel(message.channel.id)
@@ -66,9 +67,13 @@ class YoutubeCog(commands.Cog):
                         message = await channel.fetch_message(message.id)
                         if message and youtube:
                             await message.edit(embed=youtube.make_embed())
-            except Exception as e:
-                print(f"Error in YoutubeCog.check_update{e}")
-                pass
+        except Exception as e:
+            print(f"Error in YoutubeCog.check_update{e}")
+
+    @tasks.loop(seconds=10)
+    async def check_task(self):
+        if not self.check_update.is_running:
+            self.check_update.restart()
                     
     async def delete_message(self, youtube: Youtube):
         try:
@@ -81,7 +86,6 @@ class YoutubeCog(commands.Cog):
                         await message.delete()
         except Exception as e:
             print(f"Error in YoutubeCog.delete_message{e}")
-            pass
 
 
 def setup(bot):
