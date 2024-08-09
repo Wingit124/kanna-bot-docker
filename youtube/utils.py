@@ -23,7 +23,8 @@ ytdl_format_options = {
         'key': 'FFmpegExtractAudio',
         'preferredcodec': 'mp3',
         'preferredquality': '192',
-    }]
+    }],
+    'config_location': './yt-dlp.conf'
 }
 
 ffmpeg_options = {
