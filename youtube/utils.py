@@ -1,5 +1,6 @@
 from discord.embeds import Embed
 import asyncio
+import os
 import yt_dlp
 import discord
 
@@ -24,7 +25,7 @@ ytdl_format_options = {
         'preferredcodec': 'mp3',
         'preferredquality': '192',
     }],
-    'config_location': './yt-dlp.conf'
+    'config_location': os.path.join(os.getcwd(), 'yt-dlp.conf')
 }
 
 ffmpeg_options = {
