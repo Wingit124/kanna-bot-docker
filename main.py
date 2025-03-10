@@ -8,10 +8,10 @@ from help.help_command import CustomHelpCommand
 load_dotenv()
 
 TOKEN = os.environ.get('DISCORD_BOT_TOKEN')
+OPUS_PATH = os.environ.get('OPUS_PATH')
 
 EXTENSIONS = [
     'anime.anime_cog',
-    'minecraft.minecraft_cog',
     'youtube.youtube_cog'
 ]
 
@@ -24,6 +24,10 @@ bot = commands.Bot(command_prefix='d:', case_insensitive=False, intents=intents,
 @bot.event
 async def on_ready():
     print('Logged in as {0}!'.format(bot.user.name))
+    if not discord.opus.is_loaded():
+        print(f"Loading opus from: {OPUS_PATH}")
+        discord.opus.load_opus(OPUS_PATH)
+        print(f"Opus loaded: {discord.opus.is_loaded()}")
 
 async def load_extensions():
     for cog in EXTENSIONS:
