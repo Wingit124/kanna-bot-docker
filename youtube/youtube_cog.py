@@ -108,12 +108,15 @@ class YoutubeCog(commands.Cog):
     async def delete_message(self, youtube: Youtube):
         try:
             message: discord.Message = youtube.message
-            if message:
-                channel = await self.bot.fetch_channel(message.channel.id)
-                if channel:
-                    message = await channel.fetch_message(message.id)
-                    if message:
-                        await message.delete()
+            if not message:
+                return
+            channel = await self.bot.fetch_channel(message.channel.id)
+            if not channel:
+                return
+            message = await channel.fetch_message(message.id)
+            if not message:
+                return
+            await message.delete()
         except Exception as e:
             print(f"[ERROR] YoutubeCog.delete_message{e}")
 
