@@ -11,7 +11,7 @@ class MinecraftCog(commands.Cog):
     
     @commands.Cog.listener()
     async def on_ready(self):
-        print('Successfully loaded: MinecraftCog')
+        print('[INFO] Successfully loaded: MinecraftCog')
         await self.bot.tree.sync()
 
     @app_commands.command(name='minecraft', description='マインクラフトサーバーのインスタンス情報を表示するよ')

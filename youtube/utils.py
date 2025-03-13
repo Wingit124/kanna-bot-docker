@@ -56,7 +56,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
             
             return data
         except Exception as e:
-            print(f"Error in YTDLSource.data_from_url {e}")
+            print(f"[ERROR] Error in YTDLSource.data_from_url {e}")
             return None
     
     @classmethod

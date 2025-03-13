@@ -13,10 +13,21 @@ class YoutubeCog(commands.Cog):
     
     @commands.Cog.listener()
     async def on_ready(self):
-        print('Successfully loaded: YoutubeCog')
+        print('[INFO] Successfully loaded: YoutubeCog')
         self.check_update.start()
         self.check_task.start()
         await self.bot.tree.sync()
+
+    @commands.Cog.listener()
+    async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
+        # ボイスチャンネルにBot以外がいなくなったら切断する
+        voice_client = member.guild.voice_client
+        if voice_client and len([member for member in voice_client.channel.members if not member.bot]) == 0:
+            # 切断
+            await voice_client.disconnect()
+            # メッセージを削除
+            youtube: Youtube = self.youtubes.pop(member.guild.id)
+            await self.delete_message(youtube=youtube)
 
     @app_commands.command(name='youtube', description='Youtubeの動画を再生するよ')
     async def youtube(self, context: discord.Interaction):
@@ -57,23 +68,41 @@ class YoutubeCog(commands.Cog):
             await context.guild.voice_client.disconnect()
 
     @tasks.loop(seconds=3)
-    async def check_update(self):
+    async def update_message(self):
+        try:
+            for youtube in self.youtubes.values():
+                # メッセージがあるか
+                message: discord.Message = youtube.message
+                if not message:
+                    continue
+                # メッセージを編集
+                youtube.message = await message.edit(embed=youtube.make_embed())
+        except Exception as e:
+            print(f"[ERROR] YoutubeCog.update_message{e}")
+
+    @tasks.loop(seconds=300)
+    async def refresh_message_token(self):
         try:
             for youtube in self.youtubes.values():
                 message: discord.Message = youtube.message
-                if message:
-                    channel = await self.bot.fetch_channel(message.channel.id)
-                    if channel and message:
-                        message = await channel.fetch_message(message.id)
-                        if message and youtube:
-                            await message.edit(embed=youtube.make_embed())
+                if not message:
+                    return
+                channel = await self.bot.fetch_channel(message.channel.id)
+                if not channel:
+                    return
+                fetched_message = await channel.fetch_message(message.id)
+                if not fetched_message:
+                    return
+                youtube.message = fetched_message
         except Exception as e:
-            print(f"Error in YoutubeCog.check_update{e}")
-
+            print(f"[ERROR] YoutubeCog.refresh_message_token{e}")
+    
     @tasks.loop(seconds=10)
     async def check_task(self):
-        if not self.check_update.is_running:
-            self.check_update.restart()
+        if not self.update_message.is_running:
+            self.update_message.restart()
+        if not self.refresh_message_token.is_running:
+            self.refresh_message_token.restart()
                     
     async def delete_message(self, youtube: Youtube):
         try:
@@ -85,7 +114,7 @@ class YoutubeCog(commands.Cog):
                     if message:
                         await message.delete()
         except Exception as e:
-            print(f"Error in YoutubeCog.delete_message{e}")
+            print(f"[ERROR] YoutubeCog.delete_message{e}")
 
 
 def setup(bot):

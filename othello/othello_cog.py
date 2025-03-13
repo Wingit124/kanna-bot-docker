@@ -11,7 +11,7 @@ class OthelloCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print('Successfully loaded: OthelloCog')
+        print('[INFO] Successfully loaded: OthelloCog')
         await self.bot.tree.sync()
 
     @commands.command(name='othello_start', aliases=['os'])

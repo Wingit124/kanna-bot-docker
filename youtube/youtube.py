@@ -70,12 +70,13 @@ class Youtube:
         queue_list = self.queue_to_string()
         history_list = self.history_to_string()
         queue_count = len(self.queue)
+        now = datetime.datetime.now().replace(second=0, microsecond=0)
         # レスポンスを作成
         embed: Embed
         if title:
-            embed = Embed(title='"{0}"を再生中:notes:'.format(title), description='', color=0xFF7F7F, timestamp=datetime.datetime.now())
+            embed = Embed(title='"{0}"を再生中:notes:'.format(title), description='', color=0xFF7F7F, timestamp=now)
         else:
-            embed = Embed(title='再生待機中:zzz:'.format(title), description='再生待機中だよ`追加`ボタンをクリックして好きな動画をキューに追加してね', color=0xFF7F7F, timestamp=datetime.datetime.now())
+            embed = Embed(title='再生待機中:zzz:'.format(title), description='再生待機中だよ`追加`ボタンをクリックして好きな動画をキューに追加してね', color=0xFF7F7F, timestamp=now)
             embed.set_image(url='https://zunda-sleep.win9y.com/kanna_sleep.jpg')
         if progress_bar:
             embed.description = '`{0}`'.format(progress_bar)
@@ -96,11 +97,11 @@ class Youtube:
         return embed
     
     def on_error(self, error):
-        print('Player Error: {0}'.format(error))
+        print('[ERROR] Player error occurred: {0}'.format(error))
         self.next(is_user_action=False)
 
     def on_finish(self):
-        print('Player Finish')
+        print('[INFO] Player finished')
         if self.is_user_action:
             self.is_user_action = False
         else:

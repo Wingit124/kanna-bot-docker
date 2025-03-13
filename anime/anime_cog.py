@@ -12,7 +12,7 @@ class AnimeCog(commands.Cog):
     
     @commands.Cog.listener()
     async def on_ready(self):
-        print('Successfully loaded: AnimeCog')
+        print('[INFO] Successfully loaded: AnimeCog')
         await self.bot.tree.sync()
 
     @app_commands.command(name='anime', description='タイトルからアニメの情報を調べるよ')

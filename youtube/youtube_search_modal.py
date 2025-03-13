@@ -19,6 +19,7 @@ class YoutubeSearchModal(discord.ui.Modal, title='動画をキューに追加'):
     )
 
     async def on_submit(self, interaction: discord.Interaction) -> None:
+        print(f"[INFO] Queue added '{self.url.value}' by {interaction.user.name}")
         await interaction.response.defer(thinking=True, ephemeral=True)
         data = await YTDLSource.data_from_url(url=self.url.value)
         if data:

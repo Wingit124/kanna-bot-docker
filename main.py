@@ -23,11 +23,11 @@ bot = commands.Bot(command_prefix='d:', case_insensitive=False, intents=intents,
 
 @bot.event
 async def on_ready():
-    print('Logged in as {0}!'.format(bot.user.name))
+    print('[INFO] Logged in as {0}!'.format(bot.user.name))
     if not discord.opus.is_loaded():
-        print(f"Loading opus from: {OPUS_PATH}")
+        print(f"[INFO] Loading opus from: {OPUS_PATH}")
         discord.opus.load_opus(OPUS_PATH)
-        print(f"Opus loaded: {discord.opus.is_loaded()}")
+        print(f"[INFO] Opus loaded: {discord.opus.is_loaded()}")
 
 async def load_extensions():
     for cog in EXTENSIONS:
