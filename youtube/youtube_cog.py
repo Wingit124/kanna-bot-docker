@@ -14,7 +14,8 @@ class YoutubeCog(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         print('[INFO] Successfully loaded: YoutubeCog')
-        self.check_update.start()
+        self.update_message.start()
+        self.refresh_message_token.start()
         self.check_task.start()
         await self.bot.tree.sync()
 
