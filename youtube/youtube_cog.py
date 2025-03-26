@@ -2,6 +2,7 @@ import discord
 from discord import app_commands
 from discord.ext import tasks
 from discord.ext import commands
+from asyncio import create_task
 from youtube.youtube import Youtube
 from youtube.youtube_control_view import YoutubeControlView
 
@@ -76,10 +77,16 @@ class YoutubeCog(commands.Cog):
                 message: discord.Message = youtube.message
                 if not message:
                     continue
-                # メッセージを編集
-                youtube.message = await message.edit(embed=youtube.make_embed())
+                # メッセージを編集を並列処理
+                create_task(self.edit_message(youtube=youtube, message=message))
         except Exception as e:
             print(f"[ERROR] YoutubeCog.update_message{e}")
+
+    async def edit_message(self, youtube: Youtube, message: discord.Message):
+        try:
+            youtube.message = await message.edit(embed=youtube.make_embed())
+        except Exception as e:
+            print(f"[ERROR] YoutubeCog.edit_message: {e}")
 
     @tasks.loop(seconds=300)
     async def refresh_message_token(self):

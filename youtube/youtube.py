@@ -86,7 +86,7 @@ class Youtube:
             embed.add_field(name='チャンネル', value='[{0}]({1})'.format(channel_name, channel_url), inline=True)
         if duration:
             embed.add_field(name='再生時間', value=self.format_seconds(seconds=duration), inline=True)
-        if history_list:
+        if history_list and not title:
             embed.add_field(name='再生履歴'.format(self.MAX_HISTORY_COUNT), value=history_list, inline=False)
         if queue_list:
             embed.add_field(name='キュー', value=queue_list, inline=False)
