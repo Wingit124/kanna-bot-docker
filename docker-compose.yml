@@ -1,0 +1,10 @@
+services:
+  discord-bot-docker:
+    build: .
+    container_name: discord-bot
+    env_file:
+      - .env
+    restart: unless-stopped
+    volumes:
+      - .:/app
+    tty: true

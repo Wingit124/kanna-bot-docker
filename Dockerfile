@@ -1,21 +1,17 @@
-FROM python:3.11
+FROM python:3.11-slim
 
-WORKDIR /bot
+# Opusライブラリのインストール
+RUN apt-get update && apt-get install -y libopus0 ffmpeg && rm -rf /var/lib/apt/lists/*
 
-# Install Packages
-RUN pip install --upgrade pip
-RUN pip install discord.py
-RUN pip install pynacl
-RUN pip install requests
-RUN pip install python-dotenv
-RUN pip install boto3
-RUN pip install yt-dlp
-RUN pip install https://github.com/coletdjnz/yt-dlp-youtube-oauth2/archive/refs/heads/master.zip
-# Install FFmpeg
-RUN apt-get update
-RUN apt-get install -y ffmpeg
-RUN rm -rf /var/lib/apt/lists/*
+WORKDIR /app
 
-COPY . /bot
+COPY . .
 
-CMD python -u main.py
+# pipをアップグレードしてライブラリをインストール
+RUN pip install --upgrade pip && \
+    pip install discord.py pynacl requests python-dotenv boto3 yt-dlp
+
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+
+CMD ["/start.sh"]
