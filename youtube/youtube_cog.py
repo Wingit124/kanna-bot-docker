@@ -73,20 +73,20 @@ class YoutubeCog(commands.Cog):
     async def update_message(self):
         try:
             for youtube in self.youtubes.values():
+                # 編集中かどうか
+                if youtube.is_editing:
+                    print(f"[NOTICE] YoutubeCog.edit_message: edit message skipped")
+                    continue
                 # メッセージがあるか
                 message: discord.Message = youtube.message
                 if not message:
                     continue
-                # メッセージを編集を並列処理
-                create_task(self.edit_message(youtube=youtube, message=message))
+                # メッセージを編集
+                youtube.is_editing = True
+                youtube.message = await message.edit(embed=youtube.make_embed())
+                youtube.is_editing = False
         except Exception as e:
-            print(f"[ERROR] YoutubeCog.update_message{e}")
-
-    async def edit_message(self, youtube: Youtube, message: discord.Message):
-        try:
-            youtube.message = await message.edit(embed=youtube.make_embed())
-        except Exception as e:
-            print(f"[ERROR] YoutubeCog.edit_message: {e}")
+            print(f"[ERROR] YoutubeCog.update_message: {e}")
 
     @tasks.loop(seconds=300)
     async def refresh_message_token(self):

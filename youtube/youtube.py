@@ -18,6 +18,7 @@ class Youtube:
         self.queue: list[dict] = []
         self.history: list[dict] = []
         self.now_playing: dict = {}
+        self.is_editing: bool = False
         self.is_user_action: bool = False
         self.play_start_time: time = time.time()
 
