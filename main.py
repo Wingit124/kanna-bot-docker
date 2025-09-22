@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+import ctypes.util
 import asyncio
 import discord
 from discord.ext import commands
@@ -18,6 +19,7 @@ EXTENSIONS = [
 intents = discord.Intents.default()
 intents.members = False
 intents.message_content = True
+intents.voice_states = True
 
 bot = commands.Bot(command_prefix='d:', case_insensitive=False, intents=intents, help_command=CustomHelpCommand())
 
@@ -26,8 +28,9 @@ async def on_ready():
     print('[INFO] Logged in as {0}!'.format(bot.user.name))
     # OPUS読み込み
     if not discord.opus.is_loaded():
-        print(f"[INFO] Loading opus from: {OPUS_PATH}")
-        discord.opus.load_opus(OPUS_PATH)
+        opus_path = ctypes.util.find_library("opus") or OPUS_PATH
+        print(f"[INFO] Loading opus from: {opus_path}")
+        discord.opus.load_opus(opus_path)
         print(f"[INFO] Opus loaded: {discord.opus.is_loaded()}")
     # スラッシュコマンド同期
     synced = await bot.tree.sync()
