@@ -11,14 +11,6 @@ class YoutubeCog(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
         self.youtubes: dict[int, Youtube] = {}
-    
-    @commands.Cog.listener()
-    async def on_ready(self):
-        print('[INFO] Successfully loaded: YoutubeCog')
-        self.update_message.start()
-        self.refresh_message_token.start()
-        self.check_task.start()
-        await self.bot.tree.sync()
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
@@ -126,6 +118,12 @@ class YoutubeCog(commands.Cog):
             await message.delete()
         except Exception as e:
             print(f"[ERROR] YoutubeCog.delete_message{e}")
+
+    async def cog_load(self):
+        self.update_message.start()
+        self.refresh_message_token.start()
+        self.check_task.start()
+        print('[INFO] Successfully loaded: YoutubeCog')
 
 
 def setup(bot):

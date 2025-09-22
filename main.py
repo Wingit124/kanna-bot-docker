@@ -24,10 +24,14 @@ bot = commands.Bot(command_prefix='d:', case_insensitive=False, intents=intents,
 @bot.event
 async def on_ready():
     print('[INFO] Logged in as {0}!'.format(bot.user.name))
+    # OPUS読み込み
     if not discord.opus.is_loaded():
         print(f"[INFO] Loading opus from: {OPUS_PATH}")
         discord.opus.load_opus(OPUS_PATH)
         print(f"[INFO] Opus loaded: {discord.opus.is_loaded()}")
+    # スラッシュコマンド同期
+    synced = await bot.tree.sync()
+    print(f"[INFO] Synced {len(synced)} slash commands.")
 
 async def load_extensions():
     for cog in EXTENSIONS:
@@ -37,7 +41,5 @@ async def main():
     async with bot:
         await load_extensions()
         await bot.start(TOKEN)
-
-
 
 asyncio.run(main())
